@@ -1,0 +1,176 @@
+{
+  "city": "San Francisco",
+  "state": "CA",
+  "jurisdiction": "County",
+  "last_updated": "2026-06",
+  "dimensions": {
+    "income_work": {
+      "status": "moderate",
+      "metric": "Labor force participation is 69.6%, but 27% of households earn less than the $136,872 'Real Cost' self-sufficiency standard.",
+      "target": "100% of households above the Real Cost Self-Sufficiency Standard.",
+      "source": "US Census Bureau (ACS 2022) / Insight Center",
+      "url": "https://www.census.gov/programs-surveys/acs",
+      "community_action": "Support local living wage ordinances and targeted workforce development initiatives."
+    },
+    "education": {
+      "status": "moderate",
+      "metric": "70% of adults hold post-secondary degrees, yet 21% of K-12 students are chronically absent and only 50% of 3rd graders read at grade level.",
+      "target": "100% of students not chronically absent; achieve 70% proficiency target.",
+      "source": "SFUSD / California Department of Education (2024/2025)",
+      "url": "https://www.sfusd.edu",
+      "community_action": "Expand neighborhood-based literacy tutoring and wrap-around student attendance support systems."
+    },
+    "health": {
+      "status": "moderate",
+      "metric": "Average life expectancy is 82.9 years, but 32% of San Francisco neighborhoods fall below global health benchmarks.",
+      "target": "100% of population residing in healthy and safe zip codes.",
+      "source": "SF Department of Public Health / UCLA CHIS (2024)",
+      "url": "https://www.sf.gov/departments/department-public-health",
+      "community_action": "Invest in community health clinics and address environmental health disparities in vulnerable zip codes."
+    },
+    "political_voice": {
+      "status": "moderate",
+      "metric": "General election turnout is 78.9%, but falls to 55.6% for local cycles, with residents controlling <0.01% of the city budget.",
+      "target": "Maximize voter turnout across all cycles and expand democratic community budgetary control.",
+      "source": "San Francisco Department of Elections (2024)",
+      "url": "https://www.sf.gov/departments/department-elections",
+      "community_action": "Participate in local district assemblies and engage with participatory budgeting cycles."
+    },
+    "housing": {
+      "status": "severe",
+      "metric": "38.4% of renter households are rent-burdened, spending more than 30% of their gross income on housing costs.",
+      "target": "0% rent-burdened renter households through affordable housing protection.",
+      "source": "US Census Bureau (ACS 2022)",
+      "url": "https://sfplanning.org/housing-element",
+      "community_action": "Advocate for affordable housing expansion and community land trusts outlined in the SF Housing Element."
+    },
+    "mobility": {
+      "status": "moderate",
+      "metric": "52% of commute trips are made by public transportation, walking, or cycling.",
+      "target": "100% safe, affordable, accessible low-carbon transportation splits.",
+      "source": "US Census Bureau (ACS 2022) / SFMTA",
+      "url": "https://www.sfmta.com",
+      "community_action": "Promote citywide expansion of protected bicycle infrastructure and transit-first street improvements."
+    },
+    "connectivity": {
+      "status": "mild",
+      "metric": "89.1% of households have a broadband internet subscription; 94% have active smartphone access.",
+      "target": "100% universal digital connectivity and access for all households.",
+      "source": "ACS 5-Year Estimates / SF Digital Equity Report",
+      "url": "https://www.sf.gov/digital-equity-san-francisco",
+      "community_action": "Support municipal broadband access expansions and regional digital literacy training program funding."
+    },
+    "food": {
+      "status": "severe",
+      "metric": "67% of low-income adults (below 200% FPL) face active food insecurity, leaving only a 43% security rate.",
+      "target": "100% reliable access to sufficient, healthy, culturally appropriate food for all.",
+      "source": "SF Department of Public Health / SF Food Security Task Force (2024)",
+      "url": "https://www.sf.gov/information--biennial-food-security-and-equity-report",
+      "community_action": "Incorporate food access into urban land-use strategies and defend safety-net food infrastructure budgets."
+    },
+    "water": {
+      "status": "mild",
+      "metric": "85% of households meet the safe and affordable baseline, leaving a 15% shortfall driven by high utility costs.",
+      "target": "100% of households with reliable, affordable, safe water access without utility burden.",
+      "source": "SFPUC Customer Survey Synthesis (2024)",
+      "url": "https://www.sfpuc.org",
+      "community_action": "Expand utility bill discount structures and protect water infrastructure affordability metrics."
+    },
+    "energy": {
+      "status": "mild",
+      "metric": "11.2% of San Francisco households are energy burdened, spending more than 6% of their gross income on utility bills.",
+      "target": "0% energy burden through localized efficiency and affordable renewable energy access.",
+      "source": "US DOE LEAD Data / SFPUC Synthesis (2024)",
+      "url": "https://www.energy.gov/sali/low-income-energy-affordability-data-lead-tool",
+      "community_action": "Deploy residential building electrification retrofits and community-focused solar microgrid networks."
+    },
+    "equality": {
+      "status": "moderate",
+      "metric": "Women working full-time, year-round earn approximately 87 cents for every $1 earned by men.",
+      "target": "Achieve full 1:1 gender wage parity and systemic economic inclusion.",
+      "source": "US Census Bureau (ACS 2022)",
+      "url": "https://www.census.gov/programs-surveys/acs",
+      "community_action": "Support local pay transparency ordinances and equitable corporate hiring standards."
+    },
+    "community": {
+      "status": "moderate",
+      "metric": "61% of residents report feeling respected, included, or having social systems they can rely on for support.",
+      "target": "100% strong, connected community spaces ensuring belonging and mutual aid.",
+      "source": "California Wellness and City Survey Proxies (2025/2026)",
+      "url": "https://www.sf.gov/city-survey",
+      "community_action": "Fund and scale community centers, neighborhood mutual aid programs, and localized network building."
+    },
+    "peace_justice": {
+      "status": "moderate",
+      "metric": "52% of residents feel safe walking alone at night; the inverse violent crime index stands at 83%.",
+      "target": "100% safety, systemic justice, and deep community trust free from fear.",
+      "source": "Projected 2025/2026 Synthesis / City Survey Records",
+      "url": "https://www.sf.gov/city-survey",
+      "community_action": "Invest heavily in non-police community safety options and neighborhood mediation infrastructure."
+    },
+    "climate_change": {
+      "status": "severe",
+      "metric": "Consumption-based emissions stand at 4.4 metric tons CO2e per capita.",
+      "target": "Reduce consumption emissions to a safe science-based limit of 2.5 tCO2e per capita.",
+      "source": "SF Environment Department (SFE) GHG Inventory (2022)",
+      "url": "https://www.sfenvironment.org/climateplan",
+      "community_action": "Enforce commercial building decarbonization laws and accelerate public electric vehicle infrastructure."
+    },
+    "freshwater_disruption": {
+      "status": "none",
+      "metric": "Residential consumption is optimized at 43 Gallons Per Capita per Day (GPCD) as of FY 2024-2025.",
+      "target": "Maintain water efficiency footprints while continuously protecting total macro system withdrawals.",
+      "source": "SFPUC Annual Water Quality Report (2024-2025)",
+      "url": "https://www.sfpuc.org",
+      "community_action": "Scale graywater recovery installations and promote advanced industrial loop reuse methods."
+    },
+    "water_quality": {
+      "status": "severe",
+      "metric": "55% of evaluated water bodies are listed as impaired on the regional integrated water quality grid.",
+      "target": "0% impaired water body segments to maintain structural water cycle health.",
+      "source": "California State Water Resources Control Board Integrated Report (2024)",
+      "url": "https://www.waterboards.ca.gov",
+      "community_action": "Upgrade urban stormwater captures to minimize toxic urban runoff into the Bay-Delta ecosystem."
+    },
+    "air_pollution": {
+      "status": "severe",
+      "metric": "Annual mean PM2.5 exposure is 7.2 µg/m³, which represents 144% of optimal WHO health guidelines.",
+      "target": "Reduce annual mean PM2.5 levels down to the safe 5 µg/m³ boundary limit.",
+      "source": "BAAQMD / World Health Organization Air Quality Database",
+      "url": "https://www.baaqmd.gov",
+      "community_action": "Establish zero-emission commercial transit corridors and expand street-level urban canopy filters."
+    },
+    "nutrient_pollution": {
+      "status": "severe",
+      "metric": "66% to 68% nutrient overload, registering 17.3 tons/day vs the safe bay target boundary of 10.4 tons/day.",
+      "target": "Reduce marine nutrient loading to 0% overshoot above the Bayside aggregate ceiling.",
+      "source": "Bay Area Clean Water Agencies (BACWA) / SFPUC Summary Data",
+      "url": "https://bacwa.org",
+      "community_action": "Fund advanced tertiary nutrient-removal retrofits at city wastewater treatment complexes."
+    },
+    "land_conversion": {
+      "status": "severe",
+      "metric": "60% citywide impermeable surface coverage restricts urban soil and biological functionality.",
+      "target": "Reduce impermeable surface coverage to a maximum ceiling threshold of 40%.",
+      "source": "SF Environment Department / Urban Forest Buffers Mapping",
+      "url": "https://www.sfenvironment.org",
+      "community_action": "Replace concrete yards with permeable green infrastructure and local bioswales."
+    },
+    "biodiversity_loss": {
+      "status": "severe",
+      "metric": "50% of vital bio-indicator species (birds and fish) inside the Estuary show ongoing biological decline.",
+      "target": "0% indicator species in decline; ensure balanced ecosystem recovery conditions.",
+      "source": "The State of Our Estuary Report (2025)",
+      "url": "https://www.sfestuary.org/state-of-the-estuary-report/",
+      "community_action": "Support local shoreline marsh restoration projects and plant native flora corridors across city park systems."
+    },
+    "chemical_pollution": {
+      "status": "unknown",
+      "metric": "Localized consumer chemical footprints and multi-capital legacy persistent contaminants require structured baseline monitoring.",
+      "target": "0% chemical contamination over environmental absorption capacity.",
+      "source": "CalEnviroScreen Framework Proxies",
+      "url": "https://oehha.ca.gov/calenviroscreen",
+      "community_action": "Restrict municipal toxic pesticide use and mandate green chemistry purchasing programs."
+    }
+  }
+}

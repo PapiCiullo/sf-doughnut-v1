@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doughnut Data Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: #f3f4f6;
+            color: #111827;
+        }
+
+        /* Login screen */
+        .login-overlay {
+            position: fixed; inset: 0;
+            background: linear-gradient(135deg, #064e3b 0%, #059669 100%);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 1000;
+        }
+        .login-overlay.hidden { display: none; }
+        .login-box {
+            background: white; border-radius: 12px; padding: 2.5rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2); width: 360px; text-align: center;
+        }
+        .login-box h1 { font-size: 1.4rem; margin-bottom: 0.25rem; }
+        .login-box p { color: #6b7280; font-size: 0.875rem; margin-bottom: 1.5rem; }
+        .login-box input {
+            width: 100%; padding: 0.75rem 1rem; border: 1px solid #d1d5db;
+            border-radius: 8px; font-size: 1rem; margin-bottom: 1rem;
+            font-family: inherit;
+        }
+        .login-box input:focus { outline: none; border-color: #059669; box-shadow: 0 0 0 3px rgba(5,150,105,0.15); }
+        .login-box button {
+            width: 100%; padding: 0.75rem; background: #059669; color: white;
+            border: none; border-radius: 8px; font-size: 1rem; font-weight: 600;
+            cursor: pointer; font-family: inherit;
+        }
+        .login-box button:hover { background: #047857; }
+        .login-error { color: #dc2626; font-size: 0.8rem; margin-top: 0.5rem; display: none; }
+
+        /* Admin layout */
+        .admin-container { display: none; }
+        .admin-container.visible { display: block; }
+
+        header {
+            background: linear-gradient(135deg, #064e3b 0%, #059669 100%);
+            color: white; padding: 1rem 2rem;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        header h1 { font-size: 1.25rem; font-weight: 700; }
+        .header-controls { display: flex; gap: 0.75rem; align-items: center; }
+        .header-controls select, .header-controls button {
+            font-family: inherit; font-size: 0.85rem; padding: 0.5rem 1rem;
+            border-radius: 8px; border: none; cursor: pointer;
+        }
+        .header-controls select { background: rgba(255,255,255,0.15); color: white; }
+        .header-controls select option { color: #111; }
+        .btn-export { background: white; color: #064e3b; font-weight: 600; }
+        .btn-export:hover { background: #ecfdf5; }
+        .btn-logout { background: rgba(255,255,255,0.1); color: white; }
+        .btn-logout:hover { background: rgba(255,255,255,0.2); }
+
+        /* Toolbar */
+        .toolbar {
+            padding: 0.75rem 2rem; background: white; border-bottom: 1px solid #e5e7eb;
+            display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+        }
+        .toolbar label { font-size: 0.8rem; color: #6b7280; font-weight: 500; }
+        .toolbar select, .toolbar input[type="text"] {
+            font-family: inherit; font-size: 0.85rem; padding: 0.4rem 0.75rem;
+            border: 1px solid #d1d5db; border-radius: 6px;
+        }
+        .toolbar input[type="text"] { width: 220px; }
+        .toolbar input:focus, .toolbar select:focus {
+            outline: none; border-color: #059669; box-shadow: 0 0 0 2px rgba(5,150,105,0.15);
+        }
+        .unsaved-badge {
+            background: #fef3c7; color: #92400e; font-size: 0.75rem; font-weight: 600;
+            padding: 0.3rem 0.75rem; border-radius: 999px; display: none;
+        }
+        .unsaved-badge.visible { display: inline-block; }
+
+        /* Table */
+        .table-wrapper {
+            overflow: auto; margin: 0; max-height: calc(100vh - 160px);
+        }
+        table {
+            width: 100%; border-collapse: collapse; font-size: 0.82rem;
+            background: white;
+        }
+        thead th {
+            position: sticky; top: 0; z-index: 10;
+            background: #f9fafb; border-bottom: 2px solid #e5e7eb;
+            padding: 0.6rem 0.75rem; text-align: left; font-weight: 600;
+            color: #374151; white-space: nowrap; cursor: pointer; user-select: none;
+        }
+        thead th:hover { background: #f3f4f6; }
+        tbody tr { border-bottom: 1px solid #f3f4f6; }
+        tbody tr:hover { background: #f0fdf4; }
+        tbody tr.ecological { border-left: 3px solid #059669; }
+        tbody tr.social { border-left: 3px solid #3b82f6; }
+        td {
+            padding: 0.5rem 0.75rem; vertical-align: top;
+            max-width: 300px; position: relative;
+        }
+        td.editable { cursor: text; }
+        td.editable:hover { background: #fffbeb; }
+        td.editing {
+            padding: 0; background: #fffbeb;
+        }
+        td.editing textarea, td.editing input, td.editing select {
+            width: 100%; border: 2px solid #059669; padding: 0.5rem 0.75rem;
+            font-family: inherit; font-size: 0.82rem; background: white;
+            border-radius: 0;
+        }
+        td.editing textarea { min-height: 80px; resize: vertical; }
+
+        /* Level badge */
+        .level-badge {
+            display: inline-block; padding: 0.15rem 0.5rem; border-radius: 999px;
+            font-size: 0.75rem; font-weight: 600; white-space: nowrap;
+        }
+        .level-severe-neg { background: #d1fae5; color: #065f46; }
+        .level-neg { background: #ecfdf5; color: #047857; }
+        .level-zero { background: #fef3c7; color: #92400e; }
+        .level-pos { background: #fee2e2; color: #991b1b; }
+        .level-high { background: #fca5a5; color: #7f1d1d; }
+        .level-severe { background: #dc2626; color: white; }
+        .level-unknown { background: #e5e7eb; color: #6b7280; }
+
+        /* Actions cell */
+        .actions-list { padding-left: 1rem; margin: 0; }
+        .actions-list li { margin-bottom: 0.15rem; }
+
+        /* Truncation */
+        .truncated {
+            display: -webkit-box; -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical; overflow: hidden;
+        }
+        td:hover .truncated { -webkit-line-clamp: unset; }
+
+        /* Toast */
+        .toast {
+            position: fixed; bottom: 2rem; right: 2rem;
+            background: #065f46; color: white; padding: 0.75rem 1.25rem;
+            border-radius: 8px; font-size: 0.9rem; font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transform: translateY(100px); opacity: 0;
+            transition: all 0.3s ease;
+        }
+        .toast.show { transform: translateY(0); opacity: 1; }
+    </style>
+</head>
+<body>
+
+<!-- Login overlay -->
+<div class="login-overlay" id="loginOverlay">
+    <div class="login-box">
+        <h1>Doughnut Admin</h1>
+        <p>Enter the admin password to edit data</p>
+        <input type="password" id="loginPassword" placeholder="Password" autofocus>
+        <button onclick="attemptLogin()">Log In</button>
+        <div class="login-error" id="loginError">Incorrect password. Try again.</div>
+    </div>
+</div>
+
+<!-- Admin UI -->
+<div class="admin-container" id="adminContainer">
+    <header>
+        <h1>Doughnut Data Admin</h1>
+        <div class="header-controls">
+            <select id="jurisdictionSelect">
+                <option value="all">All Jurisdictions</option>
+            </select>
+            <button class="btn-export" onclick="exportData()">Export data.js</button>
+            <button class="btn-logout" onclick="logout()">Log Out</button>
+        </div>
+    </header>
+
+    <div class="toolbar">
+        <label>Filter:</label>
+        <select id="categoryFilter">
+            <option value="all">All Categories</option>
+            <option value="ecological">Ecological Ceiling</option>
+            <option value="social">Social Foundation</option>
+        </select>
+        <input type="text" id="searchInput" placeholder="Search dimensions...">
+        <span class="unsaved-badge" id="unsavedBadge">Unsaved changes</span>
+    </div>
+
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th data-col="jurisdiction">Jurisdiction</th>
+                    <th data-col="category">Category</th>
+                    <th data-col="name">Dimension</th>
+                    <th data-col="level">Level</th>
+                    <th data-col="indicator">Indicator</th>
+                    <th data-col="value">Value</th>
+                    <th data-col="year">Year</th>
+                    <th data-col="target">Target</th>
+                    <th data-col="context">Context</th>
+                    <th data-col="source">Source</th>
+                    <th data-col="sourceUrl">Source URL</th>
+                    <th data-col="actions">Ways to Get Involved</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="data.js"></script>
+<script>
+// --- Auth ---
+// Simple client-side password gate (not secure — just keeps casual visitors out)
+const ADMIN_HASH = 'doughnut2026';
+
+function attemptLogin() {
+    const pw = document.getElementById('loginPassword').value;
+    if (pw === ADMIN_HASH) {
+        document.getElementById('loginOverlay').classList.add('hidden');
+        document.getElementById('adminContainer').classList.add('visible');
+        sessionStorage.setItem('doughnut_admin', '1');
+    } else {
+        document.getElementById('loginError').style.display = 'block';
+        document.getElementById('loginPassword').value = '';
+        document.getElementById('loginPassword').focus();
+    }
+}
+
+document.getElementById('loginPassword').addEventListener('keydown', e => {
+    if (e.key === 'Enter') attemptLogin();
+});
+
+// Auto-login if session is active
+if (sessionStorage.getItem('doughnut_admin') === '1') {
+    document.getElementById('loginOverlay').classList.add('hidden');
+    document.getElementById('adminContainer').classList.add('visible');
+}
+
+function logout() {
+    sessionStorage.removeItem('doughnut_admin');
+    document.getElementById('loginOverlay').classList.remove('hidden');
+    document.getElementById('adminContainer').classList.remove('visible');
+}
+
+// --- Data model ---
+// Deep clone the JURISDICTIONS so we can edit without worry
+let editData = JSON.parse(JSON.stringify(JURISDICTIONS));
+let hasUnsaved = false;
+
+function markUnsaved() {
+    hasUnsaved = true;
+    document.getElementById('unsavedBadge').classList.add('visible');
+}
+
+// --- Build rows ---
+function flattenData() {
+    const rows = [];
+    for (const [jKey, jData] of Object.entries(editData)) {
+        for (const category of ['ecological', 'social']) {
+            if (!jData[category]) continue;
+            jData[category].forEach((dim, idx) => {
+                rows.push({
+                    jurisdictionKey: jKey,
+                    jurisdictionName: jData.name,
+                    category,
+                    index: idx,
+                    ...dim
+                });
+            });
+        }
+    }
+    return rows;
+}
+
+// --- Render ---
+const EDITABLE_FIELDS = ['level', 'indicator', 'value', 'year', 'target', 'context', 'source', 'sourceUrl', 'actions'];
+
+function levelClass(level) {
+    if (level === 'NaN' || level === null || level === undefined || isNaN(level)) return 'level-unknown';
+    const n = Number(level);
+    if (n <= -75) return 'level-severe-neg';
+    if (n < 0) return 'level-neg';
+    if (n === 0) return 'level-zero';
+    if (n <= 50) return 'level-pos';
+    if (n <= 100) return 'level-high';
+    return 'level-severe';
+}
+
+function levelLabel(level) {
+    if (level === 'NaN' || level === null || level === undefined || isNaN(level)) return 'Unknown';
+    const n = Number(level);
+    if (n <= -75) return `${n} No problem`;
+    if (n < 0) return `${n} Under control`;
+    if (n === 0) return `${n} On track`;
+    if (n <= 50) return `${n} Needs attention`;
+    if (n <= 100) return `${n} Critical`;
+    return `${n} Severe`;
+}
+
+function renderTable() {
+    const tbody = document.getElementById('tableBody');
+    const jFilter = document.getElementById('jurisdictionSelect').value;
+    const cFilter = document.getElementById('categoryFilter').value;
+    const search = document.getElementById('searchInput').value.toLowerCase();
+
+    let rows = flattenData();
+
+    if (jFilter !== 'all') rows = rows.filter(r => r.jurisdictionKey === jFilter);
+    if (cFilter !== 'all') rows = rows.filter(r => r.category === cFilter);
+    if (search) rows = rows.filter(r =>
+        r.name.toLowerCase().includes(search) ||
+        r.indicator.toLowerCase().includes(search) ||
+        (r.context && r.context.toLowerCase().includes(search))
+    );
+
+    tbody.innerHTML = rows.map(row => `
+        <tr class="${row.category}" data-jkey="${row.jurisdictionKey}" data-cat="${row.category}" data-idx="${row.index}">
+            <td>${row.jurisdictionName}</td>
+            <td style="text-transform:capitalize">${row.category}</td>
+            <td style="text-transform:capitalize;font-weight:600">${row.name}</td>
+            <td class="editable" data-field="level">
+                <span class="level-badge ${levelClass(row.level)}">${levelLabel(row.level)}</span>
+            </td>
+            <td class="editable" data-field="indicator">${esc(row.indicator || '')}</td>
+            <td class="editable" data-field="value">${esc(row.value || '')}</td>
+            <td class="editable" data-field="year">${row.year || '—'}</td>
+            <td class="editable" data-field="target"><div class="truncated">${esc(row.target || '')}</div></td>
+            <td class="editable" data-field="context"><div class="truncated">${esc(row.context || '')}</div></td>
+            <td class="editable" data-field="source"><div class="truncated">${esc(row.source || '')}</div></td>
+            <td class="editable" data-field="sourceUrl"><div class="truncated">${esc(row.sourceUrl || '')}</div></td>
+            <td class="editable" data-field="actions">
+                ${row.actions && row.actions.length
+                    ? `<ul class="actions-list">${row.actions.map(a => `<li>${esc(a)}</li>`).join('')}</ul>`
+                    : '<em style="color:#9ca3af">None</em>'}
+            </td>
+        </tr>
+    `).join('');
+
+    // Attach click handlers for editing
+    tbody.querySelectorAll('td.editable').forEach(td => {
+        td.addEventListener('dblclick', () => startEdit(td));
+    });
+}
+
+function esc(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
+
+// --- Inline editing ---
+function startEdit(td) {
+    if (td.classList.contains('editing')) return;
+    const tr = td.closest('tr');
+    const jKey = tr.dataset.jkey;
+    const cat = tr.dataset.cat;
+    const idx = parseInt(tr.dataset.idx);
+    const field = td.dataset.field;
+    const dim = editData[jKey][cat][idx];
+
+    td.classList.add('editing');
+
+    if (field === 'actions') {
+        const val = (dim.actions || []).join('\n');
+        td.innerHTML = `<textarea placeholder="One action per line">${esc(val)}</textarea>`;
+        const textarea = td.querySelector('textarea');
+        textarea.focus();
+        textarea.addEventListener('blur', () => finishEdit(td, jKey, cat, idx, field));
+        textarea.addEventListener('keydown', e => {
+            if (e.key === 'Escape') { textarea.blur(); }
+        });
+    } else if (field === 'context') {
+        const val = dim[field] || '';
+        td.innerHTML = `<textarea>${esc(val)}</textarea>`;
+        const textarea = td.querySelector('textarea');
+        textarea.focus();
+        textarea.addEventListener('blur', () => finishEdit(td, jKey, cat, idx, field));
+        textarea.addEventListener('keydown', e => {
+            if (e.key === 'Escape') { textarea.blur(); }
+        });
+    } else if (field === 'level') {
+        const val = (dim.level === 'NaN' || dim.level === null || isNaN(dim.level)) ? '' : dim.level;
+        td.innerHTML = `<input type="number" min="-100" max="150" step="25" value="${val}" placeholder="e.g. 50">`;
+        const input = td.querySelector('input');
+        input.focus();
+        input.addEventListener('blur', () => finishEdit(td, jKey, cat, idx, field));
+        input.addEventListener('keydown', e => {
+            if (e.key === 'Enter') input.blur();
+            if (e.key === 'Escape') input.blur();
+        });
+    } else {
+        const val = dim[field] || '';
+        td.innerHTML = `<input type="text" value="${esc(String(val))}">`;
+        const input = td.querySelector('input');
+        input.focus();
+        input.addEventListener('blur', () => finishEdit(td, jKey, cat, idx, field));
+        input.addEventListener('keydown', e => {
+            if (e.key === 'Enter') input.blur();
+            if (e.key === 'Escape') input.blur();
+        });
+    }
+}
+
+function finishEdit(td, jKey, cat, idx, field) {
+    const dim = editData[jKey][cat][idx];
+    const el = td.querySelector('input, textarea, select');
+    if (!el) return;
+
+    const raw = el.value;
+
+    if (field === 'actions') {
+        dim.actions = raw.split('\n').map(s => s.trim()).filter(Boolean);
+    } else if (field === 'level') {
+        dim.level = raw === '' ? 'NaN' : Number(raw);
+    } else if (field === 'year') {
+        dim.year = raw === '' ? null : parseInt(raw);
+    } else {
+        dim[field] = raw;
+    }
+
+    td.classList.remove('editing');
+    markUnsaved();
+    renderTable();
+}
+
+// --- Populate jurisdiction selector ---
+function initJurisdictionSelect() {
+    const sel = document.getElementById('jurisdictionSelect');
+    for (const [key, val] of Object.entries(JURISDICTIONS)) {
+        const opt = document.createElement('option');
+        opt.value = key;
+        opt.textContent = val.name;
+        sel.appendChild(opt);
+    }
+}
+
+// --- Export ---
+function exportData() {
+    // Rebuild the data.js content
+    let output = `// Doughnut data for all three jurisdictions\n`;
+    output += `// Level scale: -100 = no problem, -50 = under control, 0 = on track, 50 = not good, 100 = out of control, 150 = severe, NaN = unknown\n\n`;
+    output += `const JURISDICTIONS = ${formatJurisdictions(editData)};\n`;
+
+    const blob = new Blob([output], { type: 'application/javascript' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'data.js';
+    a.click();
+    URL.revokeObjectURL(url);
+
+    hasUnsaved = false;
+    document.getElementById('unsavedBadge').classList.remove('visible');
+    showToast('data.js downloaded');
+}
+
+function formatJurisdictions(data) {
+    // Pretty-print JSON-like JS object
+    const lines = [];
+    lines.push('{');
+    const jKeys = Object.keys(data);
+    jKeys.forEach((jKey, ji) => {
+        const j = data[jKey];
+        lines.push(`    ${JSON.stringify(jKey)}: {`);
+        lines.push(`        name: ${JSON.stringify(j.name)},`);
+        lines.push(`        population: ${JSON.stringify(j.population)},`);
+        lines.push(`        description: ${JSON.stringify(j.description)},`);
+
+        for (const cat of ['ecological', 'social']) {
+            if (!j[cat]) continue;
+            lines.push(`        ${cat}: [`);
+            j[cat].forEach((dim, di) => {
+                lines.push('            {');
+                lines.push(`                name: ${JSON.stringify(dim.name)},`);
+                const levelVal = (dim.level === 'NaN' || dim.level === null || isNaN(dim.level)) ? 'NaN' : dim.level;
+                lines.push(`                level: ${levelVal},`);
+                lines.push(`                indicator: ${JSON.stringify(dim.indicator)},`);
+                lines.push(`                value: ${JSON.stringify(dim.value)},`);
+                lines.push(`                year: ${dim.year === null ? 'null' : dim.year},`);
+                lines.push(`                target: ${JSON.stringify(dim.target)},`);
+                lines.push(`                context: ${JSON.stringify(dim.context)},`);
+                lines.push(`                source: ${JSON.stringify(dim.source)},`);
+                lines.push(`                sourceUrl: ${JSON.stringify(dim.sourceUrl)},`);
+                lines.push(`                screenshot: ${dim.screenshot ? JSON.stringify(dim.screenshot) : 'null'},`);
+                if (dim.actions && dim.actions.length) {
+                    if (dim.actions.length <= 3 && dim.actions.every(a => a.length < 60)) {
+                        lines.push(`                actions: [${dim.actions.map(a => JSON.stringify(a)).join(', ')}]`);
+                    } else {
+                        lines.push('                actions: [');
+                        dim.actions.forEach((a, ai) => {
+                            lines.push(`                    ${JSON.stringify(a)}${ai < dim.actions.length - 1 ? ',' : ''}`);
+                        });
+                        lines.push('                ]');
+                    }
+                } else {
+                    lines.push('                actions: []');
+                }
+                lines.push(`            }${di < j[cat].length - 1 ? ',' : ''}`);
+            });
+            lines.push(`        ]${cat === 'ecological' && j.social ? ',' : ''}`);
+        }
+        lines.push(`    }${ji < jKeys.length - 1 ? ',' : ''}`);
+    });
+    lines.push('}');
+    return lines.join('\n');
+}
+
+// --- Toast ---
+function showToast(msg) {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+// --- Warn on unload ---
+window.addEventListener('beforeunload', e => {
+    if (hasUnsaved) { e.preventDefault(); e.returnValue = ''; }
+});
+
+// --- Filter listeners ---
+document.getElementById('jurisdictionSelect').addEventListener('change', renderTable);
+document.getElementById('categoryFilter').addEventListener('change', renderTable);
+document.getElementById('searchInput').addEventListener('input', renderTable);
+
+// --- Init ---
+initJurisdictionSelect();
+renderTable();
+</script>
+</body>
+</html>
