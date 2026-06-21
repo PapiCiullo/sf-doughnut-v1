@@ -1,5 +1,5 @@
-// App state
-let currentJurisdiction = "city_santa_cruz";
+// App state - Updated to default to San Francisco County
+let currentJurisdiction = "san_francisco_county";
 let myDonut = null;
 let currentData = null;
 
@@ -190,7 +190,6 @@ function showDetail(dimType, dimName) {
         html += '</div>';
     }
 
-
     content.innerHTML = html;
     document.getElementById('detailEmpty').style.display = 'none';
     content.style.display = 'block';
@@ -226,17 +225,15 @@ document.querySelectorAll('.jurisdiction-btn').forEach(btn => {
     });
 });
 
-// Keyboard shortcuts
+// Keyboard shortcuts - Updated for San Francisco Context
 document.addEventListener('keydown', (e) => {
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-    if (e.key === '1') loadDoughnut('city_santa_cruz');
-    if (e.key === '2') loadDoughnut('santa_cruz_county');
-    if (e.key === '3') loadDoughnut('watsonville');
+    if (e.key === '1') loadDoughnut('san_francisco_county');
     if (e.key === 'd') toggleTheme();
 });
 
-// Initialize
-loadDoughnut('city_santa_cruz');
+// Initialize - Direct launch to San Francisco County
+loadDoughnut('san_francisco_county');
 setupClickInterceptor();
 
 // Resize doughnut on window resize (debounced)
