@@ -8,35 +8,76 @@
     <style>
         body { background-color: #1a1a1a; color: #e5e5e5; }
         .active { background-color: #059669 !important; color: white !important; }
+        :root {
+            --background: #1a1a1a;
+            --panel: #111827;
+            --border: #374151;
+            --text-muted: #9ca3af;
+        }
+        .detail-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; }
+        .detail-header h3 { font-size: 1.25rem; font-weight: bold; color: white; text-transform: uppercase; }
+        .detail-ring { width: 12px; height: 12px; border-radius: 50%; }
+        .ring-social { background: #e096c6; }
+        .ring-ecological { background: #883251; }
+        .detail-status { font-size: 0.75rem; padding: 0.25rem 0.5rem; border-radius: 4px; font-weight: bold; }
+        .status-good { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
+        .status-caution { background: rgba(234, 179, 8, 0.2); color: #eab308; }
+        .status-bad { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+        .status-severe { background: rgba(127, 29, 29, 0.4); color: #f87171; }
+        .status-unknown { background: rgba(156, 163, 175, 0.2); color: #9ca3af; }
+        .detail-metric { background: #1f2937; padding: 1rem; border-radius: 8px; border: 1px border #374151; margin-bottom: 1rem; }
+        .detail-metric .label { font-size: 0.75rem; text-transform: uppercase; color: #9ca3af; margin-bottom: 0.25rem; }
+        .detail-metric .value { font-size: 1.1rem; font-weight: 600; color: white; }
+        .detail-metric .year, .detail-metric .target { font-size: 0.85rem; margin-top: 0.25rem; }
+        .detail-metric .target { color: #34d399; }
+        .detail-metric .context { font-size: 0.85rem; color: #d1d5db; margin-top: 0.5rem; border-top: 1px solid #374151; padding-top: 0.5rem; }
+        .detail-source h4, .detail-actions h4 { font-size: 0.85rem; font-weight: bold; color: white; margin-bottom: 0.25rem; text-transform: uppercase; }
+        .detail-source a { font-size: 0.85rem; color: #60a5fa; text-decoration: underline; }
+        .detail-actions ul { list-style-type: disc; padding-left: 1.25rem; font-size: 0.85rem; color: #d1d5db; }
+        .summary-chip { display: inline-block; font-size: 0.75rem; font-weight: 500; padding: 0.25rem 0.5rem; border-radius: 9999px; margin-right: 0.25rem; }
+        .chip-good { background: #065f46; color: #34d399; }
+        .chip-caution { background: #92400e; color: #fbbf24; }
+        .chip-bad { background: #991b1b; color: #f87171; }
+        .chip-unknown { background: #374151; color: #9ca3af; }
     </style>
 </head>
 <body class="p-6">
-    <header class="max-w-4xl mx-auto mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <header class="max-w-6xl mx-auto mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
             <h1 class="text-2xl font-bold text-white">San Francisco Doughnut Economics</h1>
             <p class="text-sm text-gray-400">A classic portrait of social and ecological wellbeing</p>
+            <div id="summaryStrip" class="mt-2 flex flex-wrap gap-1"></div>
+            <span id="jurisdictionName" class="hidden"></span>
+            <span id="jurisdictionPop" class="hidden"></span>
+            <span id="jurisdictionDesc" class="hidden"></span>
         </div>
         <div class="flex gap-2">
-            <button class="active px-4 py-2 bg-gray-800 text-gray-300 rounded text-sm font-medium">San Francisco County</button>
+            <button class="jurisdiction-btn active px-4 py-2 bg-emerald-600 text-white rounded text-sm font-medium" data-key="san_francisco_county">San Francisco County</button>
             <a href="index-d3.html" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded text-sm font-medium transition">D3 Interactive View →</a>
+            <button id="themeIcon" class="p-2 bg-gray-800 rounded text-sm hidden">&#9790;</button>
         </div>
     </header>
 
-    <main class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="md:col-span-2 flex justify-center items-center bg-gray-900 p-4 rounded-xl border border-gray-800 shadow-xl">
+    <main class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div id="doughnutDiv" class="md:col-span-2 flex justify-center items-center bg-gray-900 p-4 rounded-xl border border-gray-800 shadow-xl min-h-[500px]">
             <canvas id="doughnutCanvas" width="500" height="500" class="max-w-full"></canvas>
         </div>
 
-        <div id="details-panel" class="bg-gray-900 p-6 rounded-xl border border-gray-800 shadow-xl">
-            <h2 id="dimension-name" class="text-xl font-bold text-white mb-2">Hover a segment</h2>
-            <p id="dimension-meta" class="text-sm text-emerald-400 mb-4"></p>
-            <div id="dimension-content" class="text-sm text-gray-300 space-y-3">
-                <p>Hover over any section of the social foundation or ecological ceiling to view San Francisco's current metrics, target boundaries, and localized community actions.</p>
+        <div id="details-panel" class="bg-gray-900 p-6 rounded-xl border border-gray-800 shadow-xl min-h-[500px] flex flex-col justify-start">
+            <div id="detailEmpty" class="flex flex-col items-center justify-center text-center h-full text-gray-500 py-12">
+                <h3 class="text-lg font-semibold text-gray-400 mb-1">Click a segment</h3>
+                <p class="text-sm max-w-xs">Click over any section of the vector framework canvas wheel to open your active San Francisco metrics database panel.</p>
             </div>
+            <div id="detailContent" class="hidden"></div>
         </div>
     </main>
 
+    <div id="lightbox" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center hidden opacity-0 transition-opacity">
+        <img id="lightboxImg" src="" class="max-w-[90%] max-h-[90%] rounded shadow-2xl">
+    </div>
+
     <script src="data.js"></script>
+    <script src="doughnut-economics-graph/doughnut.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
